@@ -1,0 +1,19 @@
+{
+  "name": "pictionary",
+  "version": "1.0.0",
+  "description": "Real-time multiplayer game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andrzej",
+  "license": "ISC",
+  "devDependencies": {
+    "expect": "^23.5.0",
+    "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "socket.io": "^2.1.1"
+  }
+}
