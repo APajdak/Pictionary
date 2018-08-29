@@ -7,7 +7,47 @@
     <title>Pictionary</title>
 </head>
 <body>
-    <h1>Hello world!</h1>
+    <div class="container">
+      <div class="chatWrapper">
+        <div id="scoreBoard" class="usersOnline border">
+          <span id="score">Score Board</span><hr/>
+          <div id="user-list"></div>
+        </div>
+        <div class="chatWindow border">
+        </div>
+        <form id="sendMessage">
+          <input type="text" id="message" placeholder="Your Guess" autocomplete="off"/> 
+        </form>
+      </div>
+      <div class="drawing">
+        <div class="login border">
+          <h1 id="pwd"></h1>
+          <h1 id="timer">Time left: <span id="timeLeft">90</span> sec</h1>
+        </div>
+        <canvas id="canvas" width="996px" height="751" class="border"></canvas>
+        <div class="tools border">
+          <div class="colors">
+            <div id="black" class="clicked" ></div>
+            <div id="darkgray" ></div>
+            <div id="red"></div>
+            <div id="darkorange"></div>
+            <div id="yellow" ></div>
+            <div id="limegreen"></div>
+            <div id="deepskyblue"></div>
+            <div id="darkorchid"></div>
+            <div id="deeppink"></div>
+            <div id="sienna"></div>
+          </div>
+          <div id="erase"></div>
+          <form oninput="pencil.value=penSize.value" id="range">
+            <input type="range" min="1" max="10" step="1" value="2" id="penSize"/>
+            <label for="pencil"> Pencil size
+              <output name="pencil" for="penSize" id="pencil">2</output>
+            </label>
+          </form>
+        </div>
+      </div>
+    </div>
 </body>
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/app.js"></script>
