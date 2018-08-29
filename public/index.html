@@ -7,13 +7,41 @@
     <title>Pictionary</title>
 </head>
 <body>
-    <div class="container">
+    <div class="login" id="login">
+        <div id="logo"></div>
+        <form id="userName" >
+          <input type="text" name="userName" placeholder="enter your name" autocomplete="off">
+          <input type="submit" value="Join Game">
+        </form>
+    </div>
+    <div class="container blur">
       <div class="chatWrapper">
         <div id="scoreBoard" class="usersOnline border">
           <span id="score">Score Board</span><hr/>
-          <div id="user-list"></div>
+          <div id="user-list">
+              <p class="brush"><span class="userName">Endriu</span><span class='score'>12</span></p> 
+              <p><span class="userName">Richard</span><span class='score'>2</span></p> 
+          </div>
         </div>
         <div class="chatWindow border">
+            <li class="message bgc">
+                <div class="messageTitle">
+                    <h4>Endriu</h4>
+                    <span>11:39</span>
+                </div>
+                <div class="messageBody">
+                    <p>Hello world</p>
+                </div>  
+            </li>
+            <li class="message bgc">
+                <div class="messageTitle">
+                    <h4>Richard</h4>
+                    <span>11:45</span>
+                </div>
+                <div class="messageBody">
+                    <p>Hello </p>
+                </div>  
+            </li>
         </div>
         <form id="sendMessage">
           <input type="text" id="message" placeholder="Your Guess" autocomplete="off"/> 
@@ -52,3 +80,5 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/app.js"></script>
 </html>
+
+

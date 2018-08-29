@@ -15,6 +15,25 @@ html{
     border-radius: 5px;
 }
 
+#login{
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 750px;
+    height: 382px;
+    z-index: 10;
+    background-color:rgba(158, 170, 172, 0.43);
+    top: 50%;
+    left: 50%;
+    margin: -191px 0 0 -375px;
+    position: absolute;
+}
+  
+#logo{
+    background-image: url("../img/logo.png");
+    width: 750px;
+    height: 250px;
+    background-size: cover;
+}
 
 #userName input[type="text"]{
     width: 100%;
@@ -197,9 +216,66 @@ label[for="pencil"], input[type="range"]{
 
 #message{
     width: 100%;
-  }
+}
+.message {
+    padding: 5px;
+    list-style-type: none; 
+    word-break: break-all;
+}
 
+.messageTitle {
+    display: flex;
+    margin-bottom: 1px;
+    font-size: 1.9rem;
+}
+  
+.messageTitle h4 {
+    font-weight: 600;
+    margin-right: 10px;
+}
+  
+.messageTitle span {
+    color: #999;
+}
+.messageBody p{
+    margin: -5px 0 0 -1px;
+    font-weight: 500;
+    font-size: 1.9rem;
+    margin-top: 2px;
+}
+.messageBody span{
+    font-style: italic;
+    display: flex;
+    font-weight: 500;
+    font-size: 1.7rem;
+}
+.blur{
+    -webkit-filter: blur(5px);
+}
+
+.hide{
+    display: none
+}
 .bgc{
     background-color: #e2e2e2;
+}
+
+.brush{
+    position: relative;
+}
+.brush::before{
+    width: 20px;
+    height: 20px;
+    top: 5px;
+    left: 5px;
+    content: " ";
+    position: absolute;
+    /* top: 10px; */
+    background-image: url('../img/paint_brush.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+  .userName{
+    margin-left: 20px;
 }
 
