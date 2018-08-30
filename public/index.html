@@ -45,7 +45,7 @@
             </li>
         </div>
         <form id="sendMessage">
-          <input type="text" id="message" placeholder="Your Guess" autocomplete="off"/> 
+          <input type="text" id="message" placeholder="Your Guess" autocomplete="off" disabled/> 
         </form>
       </div>
       <div class="drawing">
@@ -71,7 +71,7 @@
           <form oninput="pencil.value=penSize.value" id="range">
             <input type="range" min="1" max="10" step="1" value="2" id="penSize"/>
             <label for="pencil"> Pencil size
-              <output name="pencil" for="penSize" id="pencil">2</output>
+              <output name="pencilf" for="penSize" id="pencil">2</output>
             </label>
           </form>
         </div>
