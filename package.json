@@ -4,7 +4,8 @@
   "description": "Real-time multiplayer game",
   "main": "index.js",
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "test": "mocha server/**/*.test.js"
   },
   "author": "Andrzej",
   "license": "ISC",
