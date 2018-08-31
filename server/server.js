@@ -3,6 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 const {Users} = require('./utils/users');
+const {stringValidation} = require('./utils/validation');
 
 const publicPath = path.join(__dirname, '../public');
 const port = 3000;
@@ -15,7 +16,10 @@ app.use(express.static(publicPath));
 let users = new Users();
 
 io.on('connection', (socket)=>{
-    socket.on('joinGame', (userName)=>{
+    socket.on('joinGame', (userName, callback)=>{
+        if(!stringValidation(userName)){
+            return callback('User name is required');
+        }
         if(!users.users.length){
             users.addUser(socket.id, userName, true);
         }else{
