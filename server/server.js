@@ -4,6 +4,7 @@ const express = require('express');
 const socketIO = require('socket.io');
 const {Users} = require('./utils/users');
 const {stringValidation} = require('./utils/validation');
+const {Words} = require('./utils/words');
 
 const publicPath = path.join(__dirname, '../public');
 const port = 3000;
@@ -14,6 +15,7 @@ let io = socketIO(server);
 app.use(express.static(publicPath));
 
 let users = new Users();
+let Words = new Words();
 
 io.on('connection', (socket)=>{
     socket.on('joinGame', (userName, callback)=>{
