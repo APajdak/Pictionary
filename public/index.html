@@ -20,8 +20,6 @@
         <div id="scoreBoard" class="usersOnline border">
           <span id="score">Score Board</span><hr/>
           <div id="user-list">
-              <p class="brush"><span class="userName">Endriu</span><span class='score'>12</span></p> 
-              <p><span class="userName">Richard</span><span class='score'>2</span></p> 
           </div>
         </div>
         <div class="chatWindow border">
@@ -80,6 +78,17 @@
         </div>  
     </li>
     </script>
+
+    <script id="score-board-template" type="text/template">
+        {{#users}}
+          {{#canDraw}}
+            <p class="brush"><span class="userName">{{name}}</span><span class='score'>{{score}}</span></p> 
+          {{/canDraw}}
+          {{^canDraw}}
+           <p><span class="userName">{{name}}</span><span class='score'>{{score}}</span></p> 
+          {{/canDraw}}
+        {{/users}}
+      </script>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/libs/mustache.js"></script>    

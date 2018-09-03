@@ -3,6 +3,10 @@ const socket = io();
 document.querySelector('#userName input[type="submit"]').addEventListener('click', enterToTheGame);
 document.querySelector('#sendMessage').addEventListener('submit', sendMessage);
 
+let score = document.querySelector('#user-list');
+console.log();
+
+
 function enterToTheGame(e){
     e.preventDefault();
     let userName = document.querySelector('#userName input[type="text"]').value;
@@ -43,4 +47,13 @@ socket.on('serverMessage', (data)=>{
     document.querySelector('.chatWindow').insertAdjacentHTML("beforeend", html);
 });
 
-
+socket.on('scoreBoard', (users)=>{
+    let template = document.querySelector('#score-board-template').innerHTML;
+    let html = Mustache.render(template, {users});
+    let scoreBoard = document.querySelector('#user-list');
+    while(scoreBoard.hasChildNodes()){
+        scoreBoard.removeChild(scoreBoard.childNodes[0]);
+    }
+    scoreBoard.insertAdjacentHTML("beforeend", html);
+    
+  });

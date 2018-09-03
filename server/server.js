@@ -36,6 +36,7 @@ io.on('connection', (socket)=>{
 
         socket.emit('serverMessage', generateMessage('Hi,', ` let's play a game`));
         socket.broadcast.emit('serverMessage', generateMessage(`${userName} `, `has joined a game`));
+        io.emit('scoreBoard', users.users);
 
     });
 
@@ -44,7 +45,8 @@ io.on('connection', (socket)=>{
              return false;
         let user = users.getUser(socket.id);
         if(word === msg){
-            console.log("Bingo");
+            users.addScore(socket.id);
+            io.emit('scoreBoard', users.users);
         }else{
             io.emit('chatWindow', generateMessage(user.name, msg));
 
@@ -56,7 +58,10 @@ io.on('connection', (socket)=>{
 
     socket.on('disconnect', ()=>{
        let user =  users.removeUser(socket.id);
-       console.log(user);
+       if(user){
+        socket.broadcast.emit('serverMessage', generateMessage(`${user.name} `, `has left a game`));
+        io.emit('scoreBoard', users.users);
+       }
     })
 })
 
