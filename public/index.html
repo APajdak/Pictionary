@@ -25,27 +25,9 @@
           </div>
         </div>
         <div class="chatWindow border">
-            <li class="message bgc">
-                <div class="messageTitle">
-                    <h4>Endriu</h4>
-                    <span>11:39</span>
-                </div>
-                <div class="messageBody">
-                    <p>Hello world</p>
-                </div>  
-            </li>
-            <li class="message bgc">
-                <div class="messageTitle">
-                    <h4>Richard</h4>
-                    <span>11:45</span>
-                </div>
-                <div class="messageBody">
-                    <p>Hello </p>
-                </div>  
-            </li>
         </div>
         <form id="sendMessage">
-          <input type="text" id="message" placeholder="Your Guess" autocomplete="off" disabled/> 
+          <input type="text" id="messageInput" placeholder="Your Guess" autocomplete="off" disabled/> 
         </form>
       </div>
       <div class="drawing">
@@ -78,7 +60,29 @@
       </div>
     </div>
 </body>
+
+    <script id="message-template" type="text/template">
+        <li class="message bgc">
+            <div class="messageTitle">
+                <h4>{{from}}</h4>
+                <span>{{sendedAt}}</span>
+            </div>
+            <div class="messageBody">
+                <p>{{text}}</p>
+            </div>  
+        </li>
+    </script>
+
+    <script id="server-message-template" type="text/template">
+    <li class="message">
+        <div class="messageBody">
+        <span>{{from}} {{text}}</span>
+        </div>  
+    </li>
+    </script>
+
     <script src="/socket.io/socket.io.js"></script>
+    <script src="js/libs/mustache.js"></script>    
     <script src="js/app.js"></script>
 </html>
 

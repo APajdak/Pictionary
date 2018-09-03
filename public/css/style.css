@@ -214,7 +214,7 @@ label[for="pencil"], input[type="range"]{
     float: right;
 }
 
-#message{
+#messageInput{
     width: 100%;
 }
 .message {
@@ -236,6 +236,9 @@ label[for="pencil"], input[type="range"]{
   
 .messageTitle span {
     color: #999;
+}
+.messageBody {
+    border-bottom: 1px solid gray;
 }
 .messageBody p{
     margin: -5px 0 0 -1px;
