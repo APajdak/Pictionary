@@ -56,4 +56,22 @@ socket.on('scoreBoard', (users)=>{
     }
     scoreBoard.insertAdjacentHTML("beforeend", html);
     
-  });
+});
+
+socket.on('drawer', (word)=>{
+    let span = document.createElement('span');
+    span.id = "word";
+    span.innerHTML = `Draw: ${word}`;
+    document.querySelector('#pwd').innerHTML = "";
+    document.querySelector('#pwd').appendChild(span);
+    document.querySelector('#messageInput').setAttribute('disabled', 'disabled');
+    document.querySelector('#messageInput').setAttribute('placeholder', 'You are drawing');
+})
+
+socket.on("guess", ()=>{
+    document.querySelector('#messageInput').removeAttribute('disabled', 'disabled');
+    document.querySelector('#messageInput').setAttribute('placeholder', 'Your guess');
+})
+
+
+

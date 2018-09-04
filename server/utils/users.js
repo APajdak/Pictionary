@@ -21,6 +21,16 @@ class Users{
         this.users = this.users.sort( (a, b) => a.score < b.score );
     }
 
+    pickRandomGuesser(){
+        let guessers = this.users.filter(user => user.canDraw === false);
+        if(guessers){
+            let guesser = Math.floor(Math.random() * guessers.length);
+            return guessers[guesser];
+        }else{
+            return false
+        }
+    }
+
     addScore (id){
         let user = this.getUser(id);
         user.canDraw ? user.score +=7 : user.score +=5;
