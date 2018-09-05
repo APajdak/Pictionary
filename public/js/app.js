@@ -4,8 +4,6 @@ document.querySelector('#userName input[type="submit"]').addEventListener('click
 document.querySelector('#sendMessage').addEventListener('submit', sendMessage);
 
 let score = document.querySelector('#user-list');
-console.log();
-
 
 function enterToTheGame(e){
     e.preventDefault();
@@ -66,11 +64,15 @@ socket.on('drawer', (word)=>{
     document.querySelector('#pwd').appendChild(span);
     document.querySelector('#messageInput').setAttribute('disabled', 'disabled');
     document.querySelector('#messageInput').setAttribute('placeholder', 'You are drawing');
-})
+});
 
 socket.on("guess", ()=>{
     document.querySelector('#messageInput').removeAttribute('disabled', 'disabled');
     document.querySelector('#messageInput').setAttribute('placeholder', 'Your guess');
+});
+
+socket.on('timeLeft', (time)=>{
+    document.querySelector('#timeLeft').innerText = time;
 })
 
 

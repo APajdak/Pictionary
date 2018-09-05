@@ -6,6 +6,7 @@ const {Users} = require('./utils/users');
 const {stringValidation} = require('./utils/validation');
 const {Words} = require('./utils/words');
 const {generateMessage} = require('./utils/message');
+const {TimeLeft} = require('./utils/time');
 
 const publicPath = path.join(__dirname, '../public');
 const port = 3000;
@@ -17,6 +18,8 @@ app.use(express.static(publicPath));
 
 let users = new Users();
 let words = new Words();
+let timeLeft;
+
 let word = words.getRandomWord();
 
 
@@ -31,6 +34,18 @@ io.on('connection', (socket)=>{
             users.addUser(socket.id, userName, true);
             socket.join('draw');
             socket.emit("drawer", word);
+            timeLeft = new TimeLeft((time)=>{
+                if(time === 0){
+                  let drawer = users.getDrawer();
+                  switchPlayers(drawer.id);
+                  let newDrawer = users.getDrawer();
+                  io.emit('serverMessage', generateMessage(`Nobody`, ` guessed the '${word}'. ${newDrawer.name} is now drawing`));   
+                  wordScoreEmtis(drawer.id);
+                }
+                io.emit('timeLeft', time);
+              });
+              timeLeft.startCountDown();
+
         }else{
             users.addUser(socket.id, userName, false);
             socket.join('guess');
@@ -57,6 +72,7 @@ io.on('connection', (socket)=>{
             io.emit('serverMessage', generateMessage(`${user.name} `, `has guessed the word : ${word}`));
             switchPlayers(socket.id)
             wordScoreEmtis(drawer.id);
+            timeLeft.resetTime();
 
         }else{
             io.emit('chatWindow', generateMessage(user.name, msg));
@@ -73,6 +89,7 @@ io.on('connection', (socket)=>{
                 let newDrawer = users.getDrawer();
                 word = words.getRandomWord();
                 io.emit('scoreBoard', users.users); 
+                timeLeft.resetTime();
                 if(!word){
                     return gameover();
                 }
@@ -82,11 +99,18 @@ io.on('connection', (socket)=>{
             }else{
             socket.broadcast.emit('serverMessage', generateMessage(`${user.name} `, `has left the game`));
             }
+        }
+        if(!users.users.length){
+            if(timeLeft){
+             timeLeft.stopInterval();
+             timeLeft.resetTime();
+            }
         }   
     })
 
     function switchPlayers(id){
         switchDrawer(id);
+        timeLeft.resetTime();
       }
     
       function switchDrawer(id){
@@ -130,6 +154,7 @@ io.on('connection', (socket)=>{
         io.in(id).emit('guess');
       }
       function gameover () {
+        timeLeft.stopInterval();
         io.emit('serverMessage', generateMessage(`Game Over`, `${users.users[0].name} is the winner`)); 
       }
 })
