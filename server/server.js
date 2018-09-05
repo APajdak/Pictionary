@@ -18,7 +18,6 @@ app.use(express.static(publicPath));
 let users = new Users();
 let words = new Words();
 let word = words.getRandomWord();
-console.log(word);
 
 
 io.on('connection', (socket)=>{
