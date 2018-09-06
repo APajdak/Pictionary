@@ -36,11 +36,9 @@ io.on('connection', (socket)=>{
             socket.emit("drawer", word);
             timeLeft = new TimeLeft((time)=>{
                 if(time === 0){
-                  let drawer = users.getDrawer();
-                  switchPlayers(drawer.id);
-                  let newDrawer = users.getDrawer();
+                  let newDrawer =switchPlayers();
                   io.emit('serverMessage', generateMessage(`Nobody`, ` guessed the '${word}'. ${newDrawer.name} is now drawing`));   
-                  wordScoreEmtis(drawer.id);
+                  wordScoreEmtis(newDrawer.id);
                 }
                 io.emit('timeLeft', time);
               });
@@ -70,7 +68,7 @@ io.on('connection', (socket)=>{
             users.addScore(drawer.id);
             io.emit('chatWindow', generateMessage(user.name, msg));
             io.emit('serverMessage', generateMessage(`${user.name} `, `has guessed the word : ${word}`));
-            switchPlayers(socket.id)
+            switchPlayers()
             wordScoreEmtis(drawer.id);
             timeLeft.resetTime();
 
@@ -83,10 +81,11 @@ io.on('connection', (socket)=>{
 
     socket.on('disconnect', ()=>{
         let user = users.removeUser(socket.id);
+        // jezeli last user oposcil user == undefined
         if(user){
+            // jezeli user byl rysownikiem
             if(user.canDraw){
-                if(switchGuesser()){
-                let newDrawer = users.getDrawer();
+                let newDrawer = switchPlayers()
                 word = words.getRandomWord();
                 io.emit('scoreBoard', users.users); 
                 timeLeft.resetTime();
@@ -95,7 +94,6 @@ io.on('connection', (socket)=>{
                 }
                 io.in("draw").emit("drawer", word);
                 socket.broadcast.emit('serverMessage', generateMessage(`Drawer`, ` has left the game. ${newDrawer.name} is now drawing`));    
-                }
             }else{
             socket.broadcast.emit('serverMessage', generateMessage(`${user.name} `, `has left the game`));
             }
@@ -108,41 +106,39 @@ io.on('connection', (socket)=>{
         }   
     })
 
-    function switchPlayers(id){
-        switchDrawer(id);
-        timeLeft.resetTime();
-      }
-    
-      function switchDrawer(id){
-        let drawer = users.getDrawer();
-        let drawerSocket = io.sockets.connected[drawer.id];
-          drawerSocket.leave('draw');
-          drawerSocket.join('guess');
-          switchGuesser(id);
-          drawer.canDraw = false;
-          
-      }
-      
-      function switchGuesser(id){
-        let drawer = users.getDrawer();
-        if(typeof id === "undefined" || id === drawer.id){
-          let guesser = users.pickRandomGuesser();
-          if(guesser){
-            let newDrawerSocket = io.sockets.connected[guesser.id];
-            newDrawerSocket.leave('guess');
-            newDrawerSocket.join('draw');
-            guesser.canDraw = true;
-            return guesser;
-          }
-          return false;
-        }else{
-            let guesser = users.getUser(id)
-            let newDrawerSocket = io.sockets.connected[id];
-            newDrawerSocket.leave('guess');
-            newDrawerSocket.join('draw');
-            guesser.canDraw = true;
-            return guesser;
+    function switchPlayers(){
+        if(!users.users.length){
+            gameover();
+            return false
         }
+        let drawer = users.getDrawer();
+        // Jezeli osoba rysująca opusciła gre, drawer == undefined, nalezy wylosować nowego rysującego
+        if(!drawer){
+            let newDrawer = users.pickRandomGuesser();
+            let newDrawerSocket = io.sockets.connected[newDrawer.id];
+            newDrawerSocket.leave('guess');
+            newDrawerSocket.join('draw');
+            newDrawer.canDraw = true;
+            timeLeft.resetTime();
+            return newDrawer;
+        }
+        if(users.users.length == 1){
+            timeLeft.resetTime();
+            return drawer;
+        }
+
+        let newDrawer = users.pickRandomGuesser();
+        let drawerSocket = io.sockets.connected[drawer.id];
+        drawerSocket.leave('draw');
+        drawerSocket.join('guess');
+        drawer.canDraw = false;
+
+        let newDrawerSocket = io.sockets.connected[newDrawer.id];
+        newDrawerSocket.leave('guess');
+        newDrawerSocket.join('draw');
+        newDrawer.canDraw = true;
+        timeLeft.resetTime();
+        return newDrawer;
       }
 
     function wordScoreEmtis(id){
@@ -155,7 +151,9 @@ io.on('connection', (socket)=>{
       }
       function gameover () {
         timeLeft.stopInterval();
-        io.emit('serverMessage', generateMessage(`Game Over`, `${users.users[0].name} is the winner`)); 
+        if(users.users.length > 0){
+            io.emit('serverMessage', generateMessage(`Game Over`, `${users.users[0].name} is the winner`)); 
+        }
       }
 })
 

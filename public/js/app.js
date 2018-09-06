@@ -1,7 +1,13 @@
-const socket = io();
+let socket = io();
 
 document.querySelector('#userName input[type="submit"]').addEventListener('click', enterToTheGame);
 document.querySelector('#sendMessage').addEventListener('submit', sendMessage);
+
+let erase = document.querySelector('erase');
+let canvas = document.querySelector('#canvas');
+let cts = canvas.getContext('2d');
+let rect = canvas.getBoundingClientRect();
+
 
 let score = document.querySelector('#user-list');
 
