@@ -68,7 +68,7 @@ io.on('connection', (socket)=>{
             users.addScore(drawer.id);
             io.emit('chatWindow', generateMessage(user.name, msg));
             io.emit('serverMessage', generateMessage(`${user.name} `, `has guessed the word : ${word}`));
-            switchPlayers()
+            switchPlayers();
             wordScoreEmtis(drawer.id);
             timeLeft.resetTime();
 
@@ -77,11 +77,19 @@ io.on('connection', (socket)=>{
 
         }
 
+    });
+    
+    socket.on('drawing', (pic)=>{
+        io.in("guess").emit('drawing', pic);
+      })
+    
+    socket.on('clear', ()=>{
+        io.emit('clearCanvas');
     })
 
     socket.on('disconnect', ()=>{
         let user = users.removeUser(socket.id);
-        // jezeli last user oposcil user == undefined
+        // jezeli last user opuscił gre,  user == undefined
         if(user){
             // jezeli user byl rysownikiem
             if(user.canDraw){

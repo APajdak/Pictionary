@@ -3,10 +3,18 @@ let socket = io();
 document.querySelector('#userName input[type="submit"]').addEventListener('click', enterToTheGame);
 document.querySelector('#sendMessage').addEventListener('submit', sendMessage);
 
-let erase = document.querySelector('erase');
+let wordSpan = document.createElement('span');
+wordSpan.id = "word";
+let erase = document.querySelector('#erase');
 let canvas = document.querySelector('#canvas');
-let cts = canvas.getContext('2d');
+let ctx = canvas.getContext('2d');
 let rect = canvas.getBoundingClientRect();
+let canvasData = {
+    color: document.querySelector('.clicked').id,
+    penSize: document.querySelector('#penSize').value
+  }
+
+let colors = document.querySelector('.colors').children;
 
 
 let score = document.querySelector('#user-list');
@@ -63,23 +71,125 @@ socket.on('scoreBoard', (users)=>{
 });
 
 socket.on('drawer', (word)=>{
-    let span = document.createElement('span');
-    span.id = "word";
-    span.innerHTML = `Draw: ${word}`;
+    wordSpan.innerHTML = `Draw: ${word}`;
     document.querySelector('#pwd').innerHTML = "";
-    document.querySelector('#pwd').appendChild(span);
+    document.querySelector('#pwd').appendChild(wordSpan);
     document.querySelector('#messageInput').setAttribute('disabled', 'disabled');
     document.querySelector('#messageInput').setAttribute('placeholder', 'You are drawing');
+    interval = true;
+
+    canvas.addEventListener("mousedown", onMouseDown);
+    canvas.addEventListener("mouseup", onMouseUp);
+    canvas.addEventListener("mousemove", onMouseMove);
+    erase.addEventListener('click', clearCanvas);
+
+    document.querySelector('#penSize').addEventListener('change', chanagePencilSize);
+
+    for (let i = 0; i < colors.length; i++) {
+        colors[i].addEventListener('click', changeColor)
+    }
+
 });
 
 socket.on("guess", ()=>{
+    wordSpan.innerHTML = "";
     document.querySelector('#messageInput').removeAttribute('disabled', 'disabled');
     document.querySelector('#messageInput').setAttribute('placeholder', 'Your guess');
+
+    canvas.removeEventListener("mousedown", onMouseDown);
+    canvas.removeEventListener("mouseup", onMouseUp);
+    canvas.removeEventListener("mousemove", onMouseMove);
+    erase.removeEventListener('click', clearCanvas);
+    document.querySelector('#penSize').removeEventListener('change', chanagePencilSize);
+    interval = true;
+
+    for (let i = 0; i < colors.length; i++) {
+        colors[i].removeEventListener('click', changeColor);
+    }
 });
 
 socket.on('timeLeft', (time)=>{
     document.querySelector('#timeLeft').innerText = time;
-})
+});
 
+// Canvas
+
+function drawLine(canvasData, interval){
+    ctx.beginPath();
+    ctx.lineCap = "round";
+    ctx.lineWidth = canvasData.penSize;
+    ctx.strokeStyle = canvasData.color;
+    ctx.moveTo(canvasData.X, canvasData.Y);
+    ctx.lineTo(canvasData.eX, canvasData.eY);
+    ctx.stroke();
+    ctx.closePath();
+    if(interval){
+      sender = setInterval(sendCanvas, 1000)
+    }
+}
+
+function sendCanvas(){
+    let img = canvas.toDataURL('image/png', 1);
+    socket.emit("drawing", img);
+}
+
+socket.on('stopCanvas',()=>{
+    clearInterval(sender);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+socket.on("drawing", (pic)=>{
+    let img = new Image();
+    img.onload = ()=>{
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
+    img.src = pic;
+});
+
+function clearCanvas(){
+    socket.emit("clear");
+}
+
+let draw = true;
+let interval = true;
+
+function onMouseUp(e){
+    if (!draw) { return; }
+    draw = false;
+    canvasData.eX = Math.floor((e.clientX - rect.left)/(rect.right-rect.left)*canvas.width);
+    canvasData.eY = Math.floor((e.clientY - rect.top)/(rect.bottom-rect.top)*canvas.height);
+    drawLine(canvasData, interval);
+}
+  
+function onMouseDown(e){
+    draw = true;
+    canvasData.X = Math.floor((e.clientX - rect.left)/(rect.right-rect.left)*canvas.width);
+    canvasData.Y = Math.floor((e.clientY - rect.top)/(rect.bottom-rect.top)*canvas.height);
+}
+
+function onMouseMove(e){
+if (!draw) { return; }
+    canvasData.eX = Math.floor((e.clientX - rect.left)/(rect.right-rect.left)*canvas.width);
+    canvasData.eY = Math.floor((e.clientY - rect.top)/(rect.bottom-rect.top)*canvas.height);
+    drawLine(canvasData, interval);
+    interval = false;
+    canvasData.X = Math.floor((e.clientX - rect.left)/(rect.right-rect.left)*canvas.width);
+    canvasData.Y = Math.floor((e.clientY - rect.top)/(rect.bottom-rect.top)*canvas.height);
+}
+socket.on("clearCanvas", function(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+function chanagePencilSize(){
+    canvasData.penSize = document.querySelector('#penSize').value;
+};
+
+function changeColor(e){
+    for (let i = 0; i < colors.length; i++) {
+        colors[i].classList.remove('clicked'); 
+    }
+    this.classList.add('clicked');
+    canvasData.color = this.id;
+}
 
 
