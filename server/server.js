@@ -36,9 +36,11 @@ io.on('connection', (socket)=>{
             socket.emit("drawer", word);
             timeLeft = new TimeLeft((time)=>{
                 if(time === 0){
-                  let newDrawer =switchPlayers();
-                  io.emit('serverMessage', generateMessage(`Nobody`, ` guessed the '${word}'. ${newDrawer.name} is now drawing`));   
-                  wordScoreEmtis(newDrawer.id);
+                  io.in('draw').emit('stopCanvas');
+                  let newDrawer = switchPlayers();
+                  io.emit('serverMessage', generateMessage(`Nobody`, ` guessed the '${word}'. ${newDrawer.name} is now drawing`));
+                  
+                  wordScoreEmits();
                 }
                 io.emit('timeLeft', time);
               });
@@ -59,19 +61,18 @@ io.on('connection', (socket)=>{
     socket.on('message', (msg)=>{
         if(!stringValidation(msg)) 
              return false;
-             
-        let user = users.getUser(socket.id);
 
+        let user = users.getUser(socket.id);
         if(word === msg){
+            io.in('draw').emit('stopCanvas');
             let drawer = users.getDrawer();
             users.addScore(socket.id);
             users.addScore(drawer.id);
             io.emit('chatWindow', generateMessage(user.name, msg));
             io.emit('serverMessage', generateMessage(`${user.name} `, `has guessed the word : ${word}`));
-            switchPlayers();
-            wordScoreEmtis(drawer.id);
+            switchPlayers(user);
+            wordScoreEmits();
             timeLeft.resetTime();
-
         }else{
             io.emit('chatWindow', generateMessage(user.name, msg));
 
@@ -114,12 +115,13 @@ io.on('connection', (socket)=>{
         }   
     })
 
-    function switchPlayers(){
+    function switchPlayers(user){
         if(!users.users.length){
             gameover();
             return false
         }
         let drawer = users.getDrawer();
+
         // Jezeli osoba rysująca opusciła gre, drawer == undefined, nalezy wylosować nowego rysującego
         if(!drawer){
             let newDrawer = users.pickRandomGuesser();
@@ -134,13 +136,21 @@ io.on('connection', (socket)=>{
             timeLeft.resetTime();
             return drawer;
         }
-
         let newDrawer = users.pickRandomGuesser();
+        
         let drawerSocket = io.sockets.connected[drawer.id];
         drawerSocket.leave('draw');
         drawerSocket.join('guess');
         drawer.canDraw = false;
-
+        // User ktory odgadł hasło, bedzie teraz rysować.
+        if(user){
+            let newDrawerSocket = io.sockets.connected[user.id];
+            newDrawerSocket.leave('guess');
+            newDrawerSocket.join('draw');
+            user.canDraw = true;
+            timeLeft.resetTime();
+            return user;
+        }
         let newDrawerSocket = io.sockets.connected[newDrawer.id];
         newDrawerSocket.leave('guess');
         newDrawerSocket.join('draw');
@@ -149,14 +159,18 @@ io.on('connection', (socket)=>{
         return newDrawer;
       }
 
-    function wordScoreEmtis(id){
+    function wordScoreEmits(){
         word = words.getRandomWord();
+        
         io.emit('scoreBoard', users.users);
         io.emit('clearCanvas');
-
+        if(!word){
+            return gameover();
+        }
         io.in("draw").emit("drawer", word);
-        io.in(id).emit('guess');
+        io.in("guess").emit('guess');
       }
+
       function gameover () {
         timeLeft.stopInterval();
         if(users.users.length > 0){

@@ -1,6 +1,6 @@
 class TimeLeft{
     constructor(callback){
-        this.time = 90;
+        this.time = 10;
         this.interval;
         this.callback = callback
     }
@@ -19,7 +19,7 @@ class TimeLeft{
     }
 
     resetTime(){
-        this.time = 90;
+        this.time = 10;
     }
 }
 
