@@ -33,12 +33,12 @@ io.on('connection', (socket)=>{
         if(!users.users.length){
             users.addUser(socket.id, userName, true);
             socket.join('draw');
-            socket.emit("drawer", word);
+            socket.emit("drawer", word.name);
             timeLeft = new TimeLeft((time)=>{
                 if(time === 0){
                   io.in('draw').emit('stopCanvas');
                   let newDrawer = switchPlayers();
-                  io.emit('serverMessage', generateMessage(`Nobody`, ` guessed the '${word}'. ${newDrawer.name} is now drawing`));
+                  io.emit('serverMessage', generateMessage(`Nobody`, ` guessed the '${word.name}'. ${newDrawer.name} is now drawing`));
                   
                   wordScoreEmits();
                 }
@@ -49,7 +49,7 @@ io.on('connection', (socket)=>{
         }else{
             users.addUser(socket.id, userName, false);
             socket.join('guess');
-            socket.emit('guess');
+            socket.emit('guess', word.category);
         }
 
         socket.emit('serverMessage', generateMessage('Hi,', ` let's play a game`));
@@ -63,13 +63,13 @@ io.on('connection', (socket)=>{
              return false;
 
         let user = users.getUser(socket.id);
-        if(word === msg){
+        if(word.name.toLowerCase() === msg.toLowerCase()){
             io.in('draw').emit('stopCanvas');
             let drawer = users.getDrawer();
             users.addScore(socket.id);
             users.addScore(drawer.id);
             io.emit('chatWindow', generateMessage(user.name, msg));
-            io.emit('serverMessage', generateMessage(`${user.name} `, `has guessed the word : ${word}`));
+            io.emit('serverMessage', generateMessage(`${user.name} `, `has guessed the word : ${word.name}`));
             switchPlayers(user);
             wordScoreEmits();
             timeLeft.resetTime();
@@ -101,7 +101,7 @@ io.on('connection', (socket)=>{
                 if(!word){
                     return gameover();
                 }
-                io.in("draw").emit("drawer", word);
+                io.in('draw').emit('drawer', word.name);
                 socket.broadcast.emit('serverMessage', generateMessage(`Drawer`, ` has left the game. ${newDrawer.name} is now drawing`));    
             }else{
             socket.broadcast.emit('serverMessage', generateMessage(`${user.name} `, `has left the game`));
@@ -167,8 +167,8 @@ io.on('connection', (socket)=>{
         if(!word){
             return gameover();
         }
-        io.in("draw").emit("drawer", word);
-        io.in("guess").emit('guess');
+        io.in("draw").emit('drawer', word.name);
+        io.in("guess").emit('guess', word.category);
       }
 
       function gameover () {

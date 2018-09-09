@@ -39,26 +39,6 @@ function sendMessage(e){
     socket.emit('message', document.querySelector('#messageInput').value);
     document.querySelector('#messageInput').value = "";
 }
-
-socket.on('chatWindow', (data)=>{
-    let template = document.querySelector('#message-template').innerHTML;
-    let html = Mustache.render(template, {
-      text: data.text,
-      from: data.from,
-      sendedAt: data.sendedAt
-    });
-    document.querySelector('.chatWindow').insertAdjacentHTML("beforeend", html);
-});
-
-socket.on('serverMessage', (data)=>{
-    let template = document.querySelector('#server-message-template').innerHTML;
-    let html = Mustache.render(template, {
-      text: data.text,
-      from: data.from
-    });
-    document.querySelector('.chatWindow').insertAdjacentHTML("beforeend", html);
-});
-
 socket.on('scoreBoard', (users)=>{
     let template = document.querySelector('#score-board-template').innerHTML;
     let html = Mustache.render(template, {users});
@@ -91,8 +71,10 @@ socket.on('drawer', (word)=>{
 
 });
 
-socket.on("guess", ()=>{
-    wordSpan.innerHTML = "";
+socket.on("guess", (category)=>{
+    wordSpan.innerHTML = `Category: ${category}`;
+    document.querySelector('#pwd').innerHTML = "";
+    document.querySelector('#pwd').appendChild(wordSpan);
     document.querySelector('#messageInput').removeAttribute('disabled', 'disabled');
     document.querySelector('#messageInput').setAttribute('placeholder', 'Your guess');
 
@@ -192,4 +174,25 @@ function changeColor(e){
     canvasData.color = this.id;
 }
 
+
+// Mustache template
+
+socket.on('chatWindow', (data)=>{
+    let template = document.querySelector('#message-template').innerHTML;
+    let html = Mustache.render(template, {
+      text: data.text,
+      from: data.from,
+      sendedAt: data.sendedAt
+    });
+    document.querySelector('.chatWindow').insertAdjacentHTML("beforeend", html);
+});
+
+socket.on('serverMessage', (data)=>{
+    let template = document.querySelector('#server-message-template').innerHTML;
+    let html = Mustache.render(template, {
+      text: data.text,
+      from: data.from
+    });
+    document.querySelector('.chatWindow').insertAdjacentHTML("beforeend", html);
+});
 
