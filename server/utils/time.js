@@ -1,13 +1,12 @@
 class TimeLeft{
     constructor(callback){
-        this.time = 10;
+        this.time = 90;
         this.interval;
         this.callback = callback
     }
 
     startCountDown(){  
         this.interval = setInterval(this.countDown.bind(this), 1000)
-
     }
     countDown(){
         this.time--;
@@ -19,7 +18,7 @@ class TimeLeft{
     }
 
     resetTime(){
-        this.time = 10;
+        this.time = 90;
     }
 }
 

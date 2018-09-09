@@ -7,6 +7,7 @@ const {stringValidation} = require('./utils/validation');
 const {Words} = require('./utils/words');
 const {generateMessage} = require('./utils/message');
 const {TimeLeft} = require('./utils/time');
+const {Img} = require('./utils/img'); 
 
 const publicPath = path.join(__dirname, '../public');
 const port = 3000;
@@ -18,13 +19,14 @@ app.use(express.static(publicPath));
 
 let users = new Users();
 let words = new Words();
+
 let timeLeft;
+let lastetIMG;
 
 let word = words.getRandomWord();
 
-
 io.on('connection', (socket)=>{
-
+    
     socket.on('joinGame', (userName, callback)=>{
         if(!stringValidation(userName)){
             return callback('User name is required');
@@ -49,6 +51,8 @@ io.on('connection', (socket)=>{
         }else{
             users.addUser(socket.id, userName, false);
             socket.join('guess');
+            socket.emit('clearCanvas');
+            socket.emit('drawing', lastetIMG);
             socket.emit('guess', word.category);
         }
 
@@ -78,11 +82,18 @@ io.on('connection', (socket)=>{
 
         }
 
-    });
-    
+    }); 
     socket.on('drawing', (pic)=>{
-        io.in("guess").emit('drawing', pic);
-      })
+        if(!img.start)
+            img.startInterval();
+
+        img.addPic(pic);
+    });
+
+    let img = new Img((pic)=>{
+        io.in("guess").emit("drawing", pic);
+        lastetIMG = pic;
+    });
     
     socket.on('clear', ()=>{
         io.emit('clearCanvas');
@@ -96,6 +107,7 @@ io.on('connection', (socket)=>{
             if(user.canDraw){
                 let newDrawer = switchPlayers()
                 word = words.getRandomWord();
+                io.emit('clearCanvas');
                 io.emit('scoreBoard', users.users); 
                 timeLeft.resetTime();
                 if(!word){

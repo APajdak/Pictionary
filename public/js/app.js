@@ -56,7 +56,6 @@ socket.on('drawer', (word)=>{
     document.querySelector('#pwd').appendChild(wordSpan);
     document.querySelector('#messageInput').setAttribute('disabled', 'disabled');
     document.querySelector('#messageInput').setAttribute('placeholder', 'You are drawing');
-    interval = true;
 
     canvas.addEventListener("mousedown", onMouseDown);
     canvas.addEventListener("mouseup", onMouseUp);
@@ -83,7 +82,6 @@ socket.on("guess", (category)=>{
     canvas.removeEventListener("mousemove", onMouseMove);
     erase.removeEventListener('click', clearCanvas);
     document.querySelector('#penSize').removeEventListener('change', chanagePencilSize);
-    interval = true;
 
     for (let i = 0; i < colors.length; i++) {
         colors[i].removeEventListener('click', changeColor);
@@ -96,7 +94,7 @@ socket.on('timeLeft', (time)=>{
 
 // Canvas
 
-function drawLine(canvasData, interval){
+function drawLine(canvasData){
     ctx.beginPath();
     ctx.lineCap = "round";
     ctx.lineWidth = canvasData.penSize;
@@ -105,20 +103,12 @@ function drawLine(canvasData, interval){
     ctx.lineTo(canvasData.eX, canvasData.eY);
     ctx.stroke();
     ctx.closePath();
-    if(interval){
-      sender = setInterval(sendCanvas, 1000)
-    }
 }
 
 function sendCanvas(){
     let img = canvas.toDataURL('image/png', 1);
     socket.emit("drawing", img);
 }
-
-socket.on('stopCanvas',()=>{
-    clearInterval(sender);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
 
 socket.on("drawing", (pic)=>{
     let img = new Image();
@@ -133,14 +123,14 @@ function clearCanvas(){
 }
 
 let draw = true;
-let interval = true;
 
 function onMouseUp(e){
     if (!draw) { return; }
     draw = false;
     canvasData.eX = Math.floor((e.clientX - rect.left)/(rect.right-rect.left)*canvas.width);
     canvasData.eY = Math.floor((e.clientY - rect.top)/(rect.bottom-rect.top)*canvas.height);
-    drawLine(canvasData, interval);
+    drawLine(canvasData);
+    sendCanvas();
 }
   
 function onMouseDown(e){
@@ -153,8 +143,7 @@ function onMouseMove(e){
 if (!draw) { return; }
     canvasData.eX = Math.floor((e.clientX - rect.left)/(rect.right-rect.left)*canvas.width);
     canvasData.eY = Math.floor((e.clientY - rect.top)/(rect.bottom-rect.top)*canvas.height);
-    drawLine(canvasData, interval);
-    interval = false;
+    drawLine(canvasData);
     canvasData.X = Math.floor((e.clientX - rect.left)/(rect.right-rect.left)*canvas.width);
     canvasData.Y = Math.floor((e.clientY - rect.top)/(rect.bottom-rect.top)*canvas.height);
 }
