@@ -33,7 +33,7 @@
           <h1 id="pwd"></h1>
           <h1 id="timer">Time left: <span id="timeLeft">90</span> sec</h1>
         </div>
-        <canvas id="canvas" width="996px" height="751" class="border"></canvas>
+        <canvas id="canvas" width="996" height="751" class="border"></canvas>
         <div class="tools border">
           <div class="colors">
             <div id="black" class="clicked" ></div>
@@ -57,7 +57,6 @@
         </div>
       </div>
     </div>
-</body>
 
     <script id="message-template" type="text/template">
         <li class="message bgc">
@@ -72,11 +71,11 @@
     </script>
 
     <script id="server-message-template" type="text/template">
-    <li class="message">
-        <div class="messageBody">
-        <span>{{from}} {{text}}</span>
-        </div>  
-    </li>
+        <li class="message">
+            <div class="messageBody">
+            <span>{{from}} {{text}}</span>
+            </div>  
+        </li>
     </script>
 
     <script id="score-board-template" type="text/template">
@@ -88,11 +87,13 @@
            <p><span class="userName">{{name}}</span><span class='score'>{{score}}</span></p> 
           {{/canDraw}}
         {{/users}}
-      </script>
+    </script>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/libs/mustache.js"></script>    
     <script src="js/app.js"></script>
+
+</body>
 </html>
 
 

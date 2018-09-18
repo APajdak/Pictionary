@@ -16,8 +16,11 @@ let canvasData = {
 
 let colors = document.querySelector('.colors').children;
 
-
 let score = document.querySelector('#user-list');
+
+function scrollChatWindow(){
+    document.querySelector('.chatWindow').scrollTop = document.querySelector('.chatWindow').offsetHeight;
+}
 
 function enterToTheGame(e){
     e.preventDefault();
@@ -174,6 +177,7 @@ socket.on('chatWindow', (data)=>{
       sendedAt: data.sendedAt
     });
     document.querySelector('.chatWindow').insertAdjacentHTML("beforeend", html);
+    scrollChatWindow();
 });
 
 socket.on('serverMessage', (data)=>{
@@ -183,5 +187,6 @@ socket.on('serverMessage', (data)=>{
       from: data.from
     });
     document.querySelector('.chatWindow').insertAdjacentHTML("beforeend", html);
+    scrollChatWindow();
 });
 
