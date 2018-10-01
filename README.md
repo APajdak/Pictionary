@@ -9,8 +9,10 @@ Then:
 
 	npm start
 
-After that, browse localhost:3000 to play a game.
+After that, browse localhost:3000 to play a game,
 
-
+... or try live demo
+[HERE](https://pictionary-wlbptxpjpx.now.sh/ "Play Pictionary") 
+[**!!! NOTICE !!!** Canvas element works better on higher resolutions, low resolutions are not suported yet] 
 ##  To do
  - RWD
