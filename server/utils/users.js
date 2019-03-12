@@ -1,49 +1,49 @@
-class Users{
-    constructor(){
-        this.users = [];
-    }
+class Users {
+  constructor() {
+    this.users = [];
+  }
 
-    addUser(id, name, canDraw, score = 0){
-        let user = {id, name, canDraw, score};
-        this.users.push(user);
-        this.sortUsersByScore();
-        return user;
-    }
+  addUser(id, name, canDraw, score = 0) {
+    let user = { id, name, canDraw, score };
+    this.users.push(user);
+    this.sortUsersByScore();
+    return user;
+  }
 
-    getUser (id){
-        return this.users.filter( user => user.id === id)[0];
-    }
-    getDrawer (){
-        return this.users.filter( user => user.canDraw === true)[0];
-    }
+  getUser(id) {
+    return this.users.find(user => user.id === id);
+  }
+  getDrawer() {
+    return this.users.find(user => user.canDraw === true);
+  }
 
-    sortUsersByScore(){
-        this.users = this.users.sort( (a, b) => a.score < b.score );
-    }
+  sortUsersByScore() {
+    this.users = this.users.sort((a, b) => a.score < b.score);
+  }
 
-    pickRandomGuesser(){
-        let guessers = this.users.filter(user => user.canDraw === false);
-        if(guessers){
-            let guesser = Math.floor(Math.random() * guessers.length);
-            return guessers[guesser];
-        }else{
-            return false
-        }
+  pickRandomGuesser() {
+    let guessers = this.users.filter(user => user.canDraw === false);
+    if (guessers) {
+      let guesser = Math.floor(Math.random() * guessers.length);
+      return guessers[guesser];
+    } else {
+      return false;
     }
+  }
 
-    addScore (id){
-        let user = this.getUser(id);
-        user.canDraw ? user.score +=7 : user.score +=5;
-        this.sortUsersByScore();
-        return user;
+  addScore(id) {
+    let user = this.getUser(id);
+    user.canDraw ? (user.score += 7) : (user.score += 5);
+    this.sortUsersByScore();
+    return user;
+  }
+  removeUser(id) {
+    let user = this.getUser(id);
+    if (user) {
+      this.users = this.users.filter(user => user.id !== id);
     }
-    removeUser (id) {
-        let user = this.getUser(id);
-        if(user) {
-            this.users = this.users.filter( user => user.id !== id)
-        }
-        return user;
-    }
+    return user;
+  }
 }
 
-module.exports = {Users};
+module.exports = { Users };
